@@ -1,3 +1,4 @@
 # proga-2026-milk
 
-it's test project
+it is test project
+

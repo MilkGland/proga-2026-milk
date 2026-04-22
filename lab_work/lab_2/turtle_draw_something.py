@@ -1,5 +1,7 @@
 import turtle
+import math
 
+turtle.speed(1)
 turtle.shape('turtle')
 
 
@@ -63,4 +65,31 @@ def draw_spider(number_of_legs, length):
         turtle.goto(0, 0)
 
 
-draw_spider(12, 100)
+def draw_spiral(n, length):
+    #FIXME
+    # 1. угол в начальный момент времени - 85 градусов, а формула вычисления расчитана на 5 градусов
+    # 2. параметр n_ не предполагает, что градусная мера угла будет и уменьшаться и увеличиваться
+    # 3. поменять положение черепахи в начальный момент рисования окружности,
+    # чтобы она начинала рисовать ее с точки 0 градусов
+    # и двигалась по положительному направлению оси
+
+    #r = 68
+    #n_ = n
+
+    #turtle.penup()
+    #turtle.goto(0, 68)
+    #turtle.pendown()
+
+    for polygon in range(360 // n):
+        turtle.forward(length)
+        turtle.right(n)
+
+        #x = (math.cos(n_) + 1) * length
+        #y = r * math.sin(n_)
+        #turtle.goto(x, r+y)
+        #r += y
+        #n_ += n
+
+
+
+draw_spiral(5, 5)

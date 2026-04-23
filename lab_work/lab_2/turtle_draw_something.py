@@ -70,27 +70,34 @@ def draw_spider(number_of_legs, length):
         turtle.goto(0, 0)
 
 
-def draw_spiral(n, length):
+def draw_spiral(radius, angle=360):
     #FIXME
-    # 1. угол в начальный момент времени - 85 градусов, а формула вычисления расчитана на 5 градусов
-    # 2. параметр n_ не предполагает, что градусная мера угла будет и уменьшаться и увеличиваться
-    # 3. поменять положение черепахи в начальный момент рисования окружности,
-    # чтобы она начинала рисовать ее с точки 0 градусов
-    # и двигалась по положительному направлению оси
 
-    #r = 68
-    #n_ = n
+    #TODO:
+    # 1. Программа должна учитывать знак функций в четвертях
+    # 2. Посмотреть значения переменных через breakpoint
+    # и, если нужно, исправить формулы их вычисления
+    degree = 300 # Начальная градусная мера
+    x0 = 0
+    y0 = 50
 
-    #turtle.penup()
-    #turtle.goto(0, 68)
-    #turtle.pendown()
+    circle_length = 2 * math.pi * radius
+    length = circle_length / angle
 
-    for polygon in range(360 // n):
+    for side in range(angle):
+        x = x0 + radius * math.cos(degree)
+        y = y0 + radius * math.sin(degree)
+
+        if degree == 360:
+            degree = 0
+
         turtle.forward(length)
-        turtle.right(n)
+        turtle.left(360 / angle)
 
-        #x = (math.cos(n_) + 1) * length
-        #y = r * math.sin(n_)
-        #turtle.goto(x, r+y)
-        #r += y
-        #n_ += n
+        turtle.goto(x, y)
+
+        degree += 1
+        radius += ((x-x0)**2 + (y-y0)**2) ** 0.5
+
+
+draw_spiral(50)

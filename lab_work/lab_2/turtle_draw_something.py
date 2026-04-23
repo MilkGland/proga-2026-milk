@@ -5,7 +5,7 @@ turtle.speed(1)
 turtle.shape('turtle')
 
 
-def draw_regular_polygon(quantity_side, length):
+def draw_regular_polygon(length, quantity_side):
     """
     Функция, рисующая любой правильный многоугольник
     :param quantity_side: количество углов многоугольника
@@ -14,23 +14,25 @@ def draw_regular_polygon(quantity_side, length):
     """
     for side in range(quantity_side):
         turtle.forward(length)
-        turtle.left(360 // quantity_side)
+        turtle.left(360 / quantity_side)
 
 
-def draw_circle(length):
+def draw_circle(radius, angle=360):
     """
-    Функция, рисующая окружность, которая представляет из себя многоугольник с множеством углов
-    :param length: длина окружности
+    Функция, рисующая окружность, которая представляет из себя многоугольник
+    с множеством углов
+    :param radius: радиус окружности (многоугольника) в пикселях
+    :param angle: количество углов многоугольника. Чем меньше углов, тем меньше
+    многоугольник походит на окружность
     :return: None
     """
-    for polygon in range(360 // 5): # Определение длины окружности с учетом фиксированого параметра
-        turtle.forward(length)
-        turtle.right(5) # Фиксированый параметр, влияющий на количество углов в данном многоугольнике
-                        # Чем он больше, тем меньше углов в многоугольнике
-                        # Чем он меньше, тем медленнее черепаха рисует многоугольник
+    circle_length = 2 * math.pi * radius # Определение длины окружности
+    length = circle_length / angle # Длина одной стороны многоугольника
+
+    draw_regular_polygon(length, angle)
 
 
-def draw_nested_square(number_of_square, length, indent=5):
+def draw_nested_square(length, number_of_square, indent=5):
     """
     Функция, рисующая произвольное количество вложеных правильных квадратов
     :param number_of_square: количество квадратов
@@ -40,12 +42,15 @@ def draw_nested_square(number_of_square, length, indent=5):
     """
     x = indent # Координата перемещения черепхи по оси X
     y = indent # Координата перемещения черепхи по оси Y
+
     for square in range(number_of_square):
         draw_regular_polygon(4, length)
-        length += indent * 2
+
+        length += indent * 2 # Вычисление длины стороны следующего по велечине квадрата
 
         turtle.penup()
-        turtle.goto(-x, -y)
+        turtle.goto(-x, -y) # Перемещение черепахи за пределы нарисованого
+                            # квадрата на растояние indent
         x += indent
         y += indent
         turtle.pendown()
@@ -89,7 +94,3 @@ def draw_spiral(n, length):
         #turtle.goto(x, r+y)
         #r += y
         #n_ += n
-
-
-
-draw_spiral(5, 5)

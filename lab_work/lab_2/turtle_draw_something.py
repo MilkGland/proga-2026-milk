@@ -5,7 +5,7 @@ turtle.speed(1)
 turtle.shape('turtle')
 
 
-def draw_regular_polygon(length, quantity_side):
+def draw_regular_polygon(quantity_side, length):
     """
     Функция, рисующая любой правильный многоугольник
     :param quantity_side: количество углов многоугольника
@@ -32,9 +32,9 @@ def draw_circle(radius, angle=360):
     draw_regular_polygon(length, angle)
 
 
-def draw_nested_square(length, number_of_square, indent=5):
+def draw_nested_square(number_of_square, length, indent=5):
     """
-    Функция, рисующая произвольное количество вложеных правильных квадратов
+    Функция, рисующая произвольное количество вложеных квадратов
     :param number_of_square: количество квадратов
     :param length: длина стороны квадрата
     :param indent: размер отступа между квадратами
@@ -73,13 +73,9 @@ def draw_spider(number_of_legs, length):
 def draw_spiral(radius, angle=360):
     #FIXME
 
-    #TODO:
-    # 1. Программа должна учитывать знак функций в четвертях
-    # 2. Посмотреть значения переменных через breakpoint
-    # и, если нужно, исправить формулы их вычисления
     degree = 300 # Начальная градусная мера
     x0 = 0
-    y0 = 50
+    y0 = radius
 
     circle_length = 2 * math.pi * radius
     length = circle_length / angle
@@ -100,4 +96,45 @@ def draw_spiral(radius, angle=360):
         radius += ((x-x0)**2 + (y-y0)**2) ** 0.5
 
 
-draw_spiral(50)
+def draw_square_spiral(quantity_side, length, indent=5):
+    """
+    Функция, рисующая квадратную "спираль", которая представляет из себя длинную ломаную
+    :param quantity_side: количество сторон ломаной
+    :param length: длина стороны ломаной
+    :param indent: отступ между ломаными (по коорданитам x, y)
+    :return: None
+    """
+    for side in range(quantity_side):
+        turtle.forward(length)
+        turtle.left(90)
+
+        length += indent
+
+
+def draw_nested_regular_polygon(number_of_square, length, angle, indent=5):
+    """
+    Функция, рисующая произвольное количество вложеных правильных многоугольников
+    :param number_of_square: количество многоугольников
+    :param length:  длина стороны многоугольника
+    :param angle: количество углов рисуемого многоугольника
+    :param indent: размер отступа между многоугольниками
+    :return: None
+    """
+    x = indent
+    y = indent
+
+    for polygon in range(number_of_square):
+        draw_regular_polygon(angle, length)
+
+        angle += 1
+        length += indent * 2
+
+        turtle.penup()
+        turtle.goto(-x, -y * 2)
+        turtle.pendown()
+
+        x += indent
+        y += indent * 1.5
+
+
+draw_nested_regular_polygon(10, 50, 3)

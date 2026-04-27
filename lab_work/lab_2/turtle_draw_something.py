@@ -1,19 +1,19 @@
 import turtle
 import math
 
-turtle.speed(100000)
+turtle.speed(1)
 turtle.shape('turtle')
 
 
-def draw_regular_polygon(quantity_side, length):
+def draw_regular_polygon(quantity_side, side_length):
     """
     Функция, рисующая любой правильный многоугольник
     :param quantity_side: количество углов многоугольника
-    :param length: длина стороны многоугольника
+    :param side_length: длина стороны многоугольника
     :return: None
     """
     for side in range(quantity_side):
-        turtle.forward(length)
+        turtle.forward(side_length)
         turtle.left(360 / quantity_side) # Определение величины угла
                                          # правильного многоугольника
 
@@ -172,7 +172,7 @@ def draw_butterfly(radius, design, angle=360):
     :return: None
     """
 
-    turtle.right(90) # Становление бабочки вертикально вверх
+    turtle.right(90) # Становление бабочки вертикально-вверх
     peace_of_wing = radius // design # Определение радиуса вложенной окружности
 
     for wings in range(radius // design):
@@ -183,4 +183,88 @@ def draw_butterfly(radius, design, angle=360):
         peace_of_wing += radius // design
 
 
-draw_butterfly(50, 10)
+def draw_spring(number_of_turns, long):
+    """
+    Функция, рисующая пружину с произвольным количеством виктов, которая представляет
+    из себя совокупность произвольного количества двух разных окружностей
+    :param number_of_turns: количество витков пружины
+    :param long: длина пружины
+    :return: None
+    """
+
+    turtle.left(90) # Становление черепахи вертикально-вверх
+
+    piece_of_length = long / 1 + number_of_turns # Длина пружины до витка
+    length_of_turns = piece_of_length / 3 # Длина витка
+
+    radius_piece_of_length = piece_of_length / 2 * math.pi # Радиус окружности, представ
+                                                            # ляющей длину до витка
+    radius_length_of_turns = length_of_turns / 2 * math.pi # Радиус окружности, представ
+                                                            # ляющей длину витка
+
+    turtle.circle(radius_piece_of_length, 180)
+    for turns in range(number_of_turns):
+        turtle.circle(radius_length_of_turns, 180)
+        turtle.circle(radius_piece_of_length, 180)
+
+
+def draw_smiley_face(radius, body_color='yellow', eye_color='blue', color_of_smile='red'):
+    """
+    Функция, рисующая смайлик
+    :param radius: радиус окружности тела смайлика
+    :param body_color: цвет тела смайлика
+    :param eye_color: цвет глаз смайлика
+    :param color_of_smile: цвет улыбки смайлика
+    :return: None
+    """
+    turtle.penup()
+    turtle.goto(0, radius)
+    turtle.left(180)
+    turtle.pendown()
+
+    body_radius = radius
+    eye_radius = body_radius / 8
+    smile_radius = body_radius * 2/3
+    nose_size = body_radius / 7
+
+
+    turtle.fillcolor(body_color)
+    turtle.begin_fill()
+    turtle.circle(body_radius)
+    turtle.end_fill()
+
+
+    turtle.penup()
+    turtle.goto(body_radius / 2, body_radius * 2/3)
+    turtle.pendown()
+
+    turtle.fillcolor(eye_color)
+    turtle.begin_fill()
+    turtle.circle(eye_radius)
+    turtle.end_fill()
+
+    turtle.penup()
+    turtle.goto(-body_radius / 2, body_radius * 2/3)
+    turtle.pendown()
+
+    turtle.fillcolor(eye_color)
+    turtle.begin_fill()
+    turtle.circle(eye_radius)
+    turtle.end_fill()
+
+    turtle.penup()
+    turtle.goto(0, nose_size / 2)
+    turtle.left(90)
+    turtle.pendown()
+    turtle.width(10)
+    turtle.forward(nose_size)
+
+    turtle.pencolor(color_of_smile)
+    turtle.penup()
+    turtle.goto(-smile_radius, 0)
+    turtle.pendown()
+    turtle.width(10)
+    turtle.circle(smile_radius, 180)
+
+
+draw_smiley_face(150)

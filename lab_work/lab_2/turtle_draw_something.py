@@ -1,7 +1,7 @@
 import turtle
 import math
 
-turtle.speed(1)
+turtle.speed(100000)
 turtle.shape('turtle')
 
 
@@ -14,7 +14,8 @@ def draw_regular_polygon(quantity_side, length):
     """
     for side in range(quantity_side):
         turtle.forward(length)
-        turtle.left(360 / quantity_side)
+        turtle.left(360 / quantity_side) # Определение величины угла
+                                         # правильного многоугольника
 
 
 def draw_circle(radius, angle=360):
@@ -23,13 +24,13 @@ def draw_circle(radius, angle=360):
     с множеством углов
     :param radius: радиус окружности (многоугольника) в пикселях
     :param angle: количество углов многоугольника. Чем меньше углов, тем меньше
-    многоугольник походит на окружность
+                  многоугольник походит на окружность
     :return: None
     """
     circle_length = 2 * math.pi * radius # Определение длины окружности
     length = circle_length / angle # Длина одной стороны многоугольника
 
-    draw_regular_polygon(length, angle)
+    draw_regular_polygon(angle, length)
 
 
 def draw_nested_square(number_of_square, length, indent=5):
@@ -37,7 +38,7 @@ def draw_nested_square(number_of_square, length, indent=5):
     Функция, рисующая произвольное количество вложеных квадратов
     :param number_of_square: количество квадратов
     :param length: длина стороны квадрата
-    :param indent: размер отступа между квадратами
+    :param indent: размер отступа между квадратами (по коорданитам x, y)
     :return: None
     """
     x = indent # Координата перемещения черепхи по оси X
@@ -46,11 +47,11 @@ def draw_nested_square(number_of_square, length, indent=5):
     for square in range(number_of_square):
         draw_regular_polygon(4, length)
 
-        length += indent * 2 # Вычисление длины стороны следующего по велечине квадрата
+        length += indent * 2 # Вычисление длины стороны следующего по величине квадрата
 
         turtle.penup()
         turtle.goto(-x, -y) # Перемещение черепахи за пределы нарисованого
-                            # квадрата на растояние indent
+                            # квадрата на расстояние indent
         x += indent
         y += indent
         turtle.pendown()
@@ -58,8 +59,9 @@ def draw_nested_square(number_of_square, length, indent=5):
 
 def draw_spider(number_of_legs, length):
     """
-    Функция, рисующая произвольное количество ног паучку (лучей)
-    :param number_of_legs: количество исходящих из центра лучей, которые представляют ноги паука
+    Функция, рисующая произвольное количество ног (лучей) паучка
+    :param number_of_legs: количество исходящих из центра лучей,
+                           которые представляют ноги паука
     :param length: длина ног (лучей)
     :return: None
     """
@@ -81,8 +83,8 @@ def draw_spiral(radius, angle=360):
     length = circle_length / angle
 
     for side in range(angle):
-        x = x0 + radius * math.cos(degree)
-        y = y0 + radius * math.sin(degree)
+        x = x0 + radius * math.cos(math.radians(degree))
+        y = y0 + radius * math.sin(math.radians(degree))
 
         if degree == 360:
             degree = 0
@@ -112,6 +114,8 @@ def draw_square_spiral(quantity_side, length, indent=5):
 
 
 def draw_nested_regular_polygon(number_of_square, length, angle, indent=5):
+    #FIXME
+
     """
     Функция, рисующая произвольное количество вложеных правильных многоугольников
     :param number_of_square: количество многоугольников
@@ -120,21 +124,63 @@ def draw_nested_regular_polygon(number_of_square, length, angle, indent=5):
     :param indent: размер отступа между многоугольниками
     :return: None
     """
-    x = indent
-    y = indent
 
     for polygon in range(number_of_square):
+        radius = length / (2 * math.sin(math.radians(180/angle)))
+
         draw_regular_polygon(angle, length)
 
-        angle += 1
-        length += indent * 2
-
         turtle.penup()
-        turtle.goto(-x, -y * 2)
+        turtle.back(radius / 2)
+        turtle.right(90)
+        turtle.forward(radius / 2)
+        turtle.left(90)
         turtle.pendown()
 
-        x += indent
-        y += indent * 1.5
+        angle += 1
+        length += radius
 
 
-draw_nested_regular_polygon(10, 50, 3)
+def draw_flower(radius, number_of_petals, angle=360):
+    """
+    Функция, рисующая цветочек, представляющий из себя совокупность произвольного
+    количества двух симметрично расположенных окружностей (многоугольников)
+    :param radius: радиус окружности (лепестка)
+    :param number_of_petals: количество лепестков
+    :param angle: количество углов многоугольника. Чем меньше углов, тем меньше
+                  многоугольник походит на окружность
+    :return: None
+    """
+
+    for petals in range(number_of_petals // 2): # Задание количества рисуемых лепестков
+                                                # с учетом симметрии
+        for petal in range(2):
+            draw_circle(radius, angle)
+            turtle.right(180)
+
+        turtle.right(360 / number_of_petals) # Определение величины угла между лепестками
+
+
+def draw_butterfly(radius, design, angle=360):
+    """
+    Функция, рисующая бабочку, представляющую из себя две окружности (два крыла),
+    внутрь которых вложено произвольное количество окружностей (узоров крыла)
+    :param radius: радиус окружности (крыла)
+    :param design: количество узоров на крыле (вложенных в крыло окружностей)
+    :param angle: количество углов многоугольника. Чем меньше углов, тем меньше
+                  многоугольник походит на окружность
+    :return: None
+    """
+
+    turtle.right(90) # Становление бабочки вертикально вверх
+    peace_of_wing = radius // design # Определение радиуса вложенной окружности
+
+    for wings in range(radius // design):
+        for wing in range(2): # Задание количества рисуемых крыльев, с учетом симметрии
+            draw_circle(peace_of_wing, angle)
+            turtle.right(180)
+
+        peace_of_wing += radius // design
+
+
+draw_butterfly(50, 10)

@@ -158,8 +158,8 @@ def draw_flower(radius, number_of_petals, angle=360):
     :return: None
     """
 
-    for petals in range(number_of_petals // 2): # Количества рисуемых лепес
-                                                # тков с учетом симметрии
+    for petals in range(number_of_petals // 2):
+        # Количества рисуемых лепестков с учетом симметрии
         for petal in range(2):
             draw_circle(radius, angle)
             turtle.right(180)
@@ -210,10 +210,11 @@ def draw_spring(number_of_turns, long):
     piece_of_length = long / 1 + number_of_turns # Длина пружины до витка
     length_of_turns = piece_of_length / 3 # Длина витка
 
-    radius_piece_of_length = piece_of_length / 2 * math.pi # Радиус окружности, представ
-                                                            # ляющей длину до витка
-    radius_length_of_turns = length_of_turns / 2 * math.pi # Радиус окружности, представ
-                                                            # ляющей длину витка
+    radius_piece_of_length = piece_of_length / 2 * math.pi
+    # Радиус окружности, представляющей длину до витка
+
+    radius_length_of_turns = length_of_turns / 2 * math.pi
+    # Радиус окружности, представляющей длину витка
 
     turtle.circle(radius_piece_of_length, 180)
     for turns in range(number_of_turns):

@@ -309,4 +309,4 @@ def draw_star(nodes, length):
         turtle.left(180 - angle)
 
 
-draw_star(11, 200)
+draw_spiral(50)

@@ -3,6 +3,7 @@ import random
 
 turtle.speed(10)
 
+
 def draw_motion():
     """
     Функция, рисующая имитацию Броуновского движения

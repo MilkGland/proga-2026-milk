@@ -77,6 +77,7 @@ def draw_spider(number_of_legs, length):
 
 def draw_spiral(radius, angle=360):
     #FIXME
+    #TODO: move up
 
     degree = 300 # Начальная градусная мера
     x0 = 0
@@ -119,6 +120,7 @@ def draw_square_spiral(quantity_side, length, indent=5):
 
 def draw_nested_regular_polygon(number_of_square, length, angle, indent=5):
     #FIXME
+    #TODO: indent
 
     """
     Функция, рисующая произвольное количество
@@ -225,6 +227,7 @@ def draw_spring(number_of_turns, long):
 def draw_smiley_face(radius, body_color='yellow',
                      eye_color='blue', color_of_smile='red'):
     #FIXME
+    #TODO: refactoring
 
     """
     Функция, рисующая смайлик
@@ -286,7 +289,7 @@ def draw_smiley_face(radius, body_color='yellow',
 
 def draw_star(nodes, length):
     #FIXME
-
+    #TODO: more choice of angles
     """
     Функция, рисующая правильную звезду с 5 и 11 вершинами
     :param nodes: количество вершин звезды

@@ -7,6 +7,7 @@ turtle.pensize(5)
 
 def _window_parameter(code: list, side: int):
     #FIXME
+    #TODO: right window size
 
     display_resolution = {'width': 1920, 'height': 1080}
     window_resolution = (display_resolution['width'] * 0.5,

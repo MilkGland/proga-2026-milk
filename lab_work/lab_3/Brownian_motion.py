@@ -9,6 +9,7 @@ def draw_motion():
     Функция, рисующая имитацию Броуновского движения
     :return: None
     """
+
     while True:
         number = random.random()
 

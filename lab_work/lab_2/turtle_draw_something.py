@@ -124,7 +124,9 @@ def draw_nested_regular_polygon(number_of_square, length, angle, indent=5):
 
     """
     Функция, рисующая произвольное количество
-    вложеных правильных многоугольников
+    вложеных правильных многоугольников, количество углов
+    которых увеличивается на 1 с каждым нарисованным
+    многоугольником
     :param number_of_square: количество многоугольников
     :param length:  длина стороны многоугольника
     :param angle: количество углов рисуемого многоугольника
@@ -226,9 +228,6 @@ def draw_spring(number_of_turns, long):
 
 def draw_smiley_face(radius, body_color='yellow',
                      eye_color='blue', color_of_smile='red'):
-    #FIXME
-    #TODO: refactoring
-
     """
     Функция, рисующая смайлик
     :param radius: радиус окружности тела смайлика
@@ -237,59 +236,47 @@ def draw_smiley_face(radius, body_color='yellow',
     :param color_of_smile: цвет улыбки смайлика
     :return: None
     """
-    turtle.penup()
-    turtle.goto(0, radius)
-    turtle.left(180)
-    turtle.pendown()
 
     body_radius = radius
     eye_radius = body_radius / 8
-    smile_radius = body_radius * 2/3
+    smile_radius = body_radius * 2 / 3
     nose_size = body_radius / 7
 
+    def move(x, y, angle):
+        turtle.penup()
+        turtle.goto(x, y)
+        turtle.left(angle)
+        turtle.pendown()
 
-    turtle.fillcolor(body_color)
-    turtle.begin_fill()
-    turtle.circle(body_radius)
-    turtle.end_fill()
+    def draw_with_color(radius_, color):
+        turtle.fillcolor(color)
+        turtle.begin_fill()
+        turtle.circle(radius_)
+        turtle.end_fill()
 
 
-    turtle.penup()
-    turtle.goto(body_radius / 2, body_radius * 2/3)
-    turtle.pendown()
+    move(0, radius, 180)
+    draw_with_color(body_radius, body_color)
 
-    turtle.fillcolor(eye_color)
-    turtle.begin_fill()
-    turtle.circle(eye_radius)
-    turtle.end_fill()
 
-    turtle.penup()
-    turtle.goto(-body_radius / 2, body_radius * 2/3)
-    turtle.pendown()
+    move(body_radius / 2, body_radius * 2/3, 0)
+    draw_with_color(eye_radius, eye_color)
 
-    turtle.fillcolor(eye_color)
-    turtle.begin_fill()
-    turtle.circle(eye_radius)
-    turtle.end_fill()
+    move(-body_radius / 2, body_radius * 2/3, 0)
+    draw_with_color(eye_radius, eye_color)
 
-    turtle.penup()
-    turtle.goto(0, nose_size / 2)
-    turtle.left(90)
-    turtle.pendown()
+
+    move(0, nose_size / 2, 90)
     turtle.width(10)
     turtle.forward(nose_size)
 
     turtle.pencolor(color_of_smile)
-    turtle.penup()
-    turtle.goto(-smile_radius, 0)
-    turtle.pendown()
+    move(-smile_radius, 0, 0)
     turtle.width(10)
     turtle.circle(smile_radius, 180)
 
 
 def draw_star(nodes, length):
-    #FIXME
-    #TODO: more choice of angles
     """
     Функция, рисующая правильную звезду с 5 и 11 вершинами
     :param nodes: количество вершин звезды
@@ -301,9 +288,10 @@ def draw_star(nodes, length):
 
     if nodes == 11:
         step = 5
-    else:
-        nodes = 5
+    elif nodes == 5:
         step = 2
+    else:
+        raise ValueError('The star must have 11 or 5 nodes')
 
 
     angle = 180 * (nodes - 2*step) / nodes
@@ -312,4 +300,4 @@ def draw_star(nodes, length):
         turtle.left(180 - angle)
 
 
-draw_spiral(50)
+draw_nested_regular_polygon(10, 50, 3)

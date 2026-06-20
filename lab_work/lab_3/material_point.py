@@ -27,6 +27,11 @@ def draw_area(height: int, width: int):
     cursor.goto(height, -width)
     cursor.goto(height, width)
 
+    def return_param(height, width):
+        return height, width
+
+    return return_param
+
 
 def set_start(x: int, y: int):
     """
@@ -75,6 +80,7 @@ def material_point(vx: int, vy: int):
         ball.goto(x + vx, y + vy)
 
 
-draw_area(300, 300)
-set_start(-300, -300)
-material_point(1, 4)
+if __name__ == '__main__':
+    draw_area(300, 300)
+    set_start(-300, -300)
+    material_point(1, 4)

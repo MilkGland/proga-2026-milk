@@ -1,13 +1,9 @@
 import pygame
 
-# Инициализация
 pygame.init()
-
-# Создание окна
 screen = pygame.display.set_mode((400, 400))
 
 
-# Прорисовка фигур
 def net(window_parameter: tuple, indent: int,
          color: tuple=(255,255,255)):
     """
@@ -18,7 +14,6 @@ def net(window_parameter: tuple, indent: int,
     :param color: цвет сетки (R, G, B)
     :return: None
     """
-
     window_size = {'width': window_parameter[0],
                    'height': window_parameter[1]}
     number_of_line_y = window_size.get('height') // indent
@@ -72,11 +67,9 @@ def angry_smiley():
 background((400, 400))
 angry_smiley()
 
-# Обновление экрана для отображения нарисованного
 pygame.display.update()
 clock = pygame.time.Clock()
 
-# Основной цикл, в котором будут отслеживаться происходящие события
 while True:
     clock.tick(30)
     for event in pygame.event.get():

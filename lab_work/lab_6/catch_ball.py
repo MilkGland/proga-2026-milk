@@ -58,7 +58,7 @@ def create_new_ball():
     circle(screen, set_random_color(), (x, y), r)
 
 
-def click(x, y, r):
+def check_click_hit(event, x, y, r):
     """
     Функция, проверяющая, попал ли пользователь кликом мышки по шарику.
     :param x: координата x центра шарика
@@ -66,7 +66,14 @@ def click(x, y, r):
     :param r: радиус шарика
     :return: None
     """
-    pass
+    click_x_coord = event.pos[0]
+    click_y_coord = event.pos[1]
+
+    click_distance = ((click_x_coord - x)**2 +
+                      (click_y_coord - y)**2) ** 0.5
+
+    if click_distance >= r:
+        point_counter()
 
 
 pygame.display.update()
@@ -79,7 +86,7 @@ while not finished:
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            click(x, y, r)
+            check_click_hit(event, x, y, r)
 
 
     create_new_ball()

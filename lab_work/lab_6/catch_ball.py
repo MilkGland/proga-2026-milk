@@ -1,6 +1,7 @@
 import pygame
 from pygame.draw import *
-from random import randint
+import random
+
 pygame.init()
 
 '''
@@ -17,20 +18,44 @@ FPS = 2
 screen = pygame.display.set_mode((500, 500))
 
 
-def set_color():
+def point_counter():
     """
-    Функция, задающая случайный цвет каждому новому созданному шарику
-    :return: color
-    """
-    pass
-
-
-def new_ball():
-    """
-    Функция, создающая новый шарик со случайным радиусом и координатами
+    Функция, подсчитывающая и выводящая на экран количество очков,
+    которые получил игрок за попадание в цель
     :return: None
     """
     pass
+
+
+def set_random_color():
+    """
+    Функция, задающая случайный цвет каждому новому созданному шарику
+    :return: random color
+    """
+
+    red = (255, 0, 0)
+    blue = (0, 0, 255)
+    yellow = (255, 255, 0)
+    green = (0, 255, 0)
+    magenta = (255, 0, 255)
+    cyan = (0, 255, 255)
+
+    colors = [red, blue, green, yellow, magenta, cyan]
+    return colors[random.randint(0, 5)]
+
+
+def create_new_ball():
+    """
+    Функция, создающая новый шарик со случайными радиусом (от 10 до 100)
+     и координатами x, y (от 100 до 400)
+    :return: None
+    """
+    global x, y, r
+    x = random.randint(100, 500)
+    y = random.randint(100, 500)
+    r = random.randint(15, 75)
+
+    circle(screen, set_random_color(), (x, y), r)
 
 
 def click(x, y, r):
@@ -54,10 +79,10 @@ while not finished:
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            click()
+            click(x, y, r)
 
 
-    new_ball()
+    create_new_ball()
     pygame.display.update()
     screen.fill('black')
 

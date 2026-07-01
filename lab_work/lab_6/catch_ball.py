@@ -14,17 +14,38 @@ pygame.init()
 7 Сделать таблицу лучших игроков, автоматически сохраняющуюся в файл.
 '''
 
-FPS = 2
+_ALL_POINTS = 0
+FPS = 1
 screen = pygame.display.set_mode((500, 500))
+
+def print_number_of_point(point=0):
+    """
+    Функция, выводящая текущее количество очков
+    :return: None
+    """
+    
+    global _ALL_POINTS
+    _ALL_POINTS += point
+
+    font = pygame.font.Font(None, 24)
+    point_printer = font.render("Number of points: " +
+                                 str(_ALL_POINTS),
+                                 True, (255, 255, 255))
+
+    screen.blit(point_printer, (25, 25))
 
 
 def point_counter():
     """
-    Функция, подсчитывающая и выводящая на экран количество очков,
-    которые получил игрок за попадание в цель
+    Функция, подсчитывающая количество очков, которые получил
+    игрок за попадание в цель
     :return: None
     """
-    pass
+
+    max_radius = 75
+    quantity_point = round(max_radius / r)
+
+    print_number_of_point(quantity_point)
 
 
 def set_random_color():
@@ -41,16 +62,19 @@ def set_random_color():
     cyan = (0, 255, 255)
 
     colors = [red, blue, green, yellow, magenta, cyan]
+
     return colors[random.randint(0, 5)]
 
 
 def create_new_ball():
     """
-    Функция, создающая новый шарик со случайными радиусом (от 10 до 100)
-     и координатами x, y (от 100 до 400)
-    :return: None
+    Функция, создающая новый шарик со случайными радиусом r (от 10 до 100)
+    и координатами x, y (от 100 до 500)
+    :return: x, y, r
     """
+
     global x, y, r
+
     x = random.randint(100, 500)
     y = random.randint(100, 500)
     r = random.randint(15, 75)
@@ -72,7 +96,7 @@ def check_click_hit(event, x, y, r):
     click_distance = ((click_x_coord - x)**2 +
                       (click_y_coord - y)**2) ** 0.5
 
-    if click_distance >= r:
+    if click_distance <= r:
         point_counter()
 
 
@@ -88,7 +112,7 @@ while not finished:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             check_click_hit(event, x, y, r)
 
-
+    print_number_of_point()
     create_new_ball()
     pygame.display.update()
     screen.fill('black')

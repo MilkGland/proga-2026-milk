@@ -100,6 +100,15 @@ def check_click_hit(event, x, y, r):
         point_counter()
 
 
+def ball_move():
+    """
+    Функция, определяющая скорость и движение шарика в границе и
+    очищающая шарик с экрана, если его время жизни истекает
+    :return: None
+    """
+    pass
+
+
 def draw_area():
     """
     Функция, риующая границу, в которой
@@ -129,6 +138,7 @@ while not finished:
     print_number_of_point()
     create_new_ball()
     pygame.display.update()
+
     screen.fill('black')
 
 pygame.quit()

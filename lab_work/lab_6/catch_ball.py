@@ -16,14 +16,14 @@ pygame.init()
 
 _ALL_POINTS = 0
 FPS = 1
-screen = pygame.display.set_mode((500, 500))
+screen = pygame.display.set_mode((600, 600))
 
 def print_number_of_point(point=0):
     """
     Функция, выводящая текущее количество очков
     :return: None
     """
-    
+
     global _ALL_POINTS
     _ALL_POINTS += point
 
@@ -75,8 +75,8 @@ def create_new_ball():
 
     global x, y, r
 
-    x = random.randint(100, 500)
-    y = random.randint(100, 500)
+    x = random.randint(100, 475)
+    y = random.randint(100, 475)
     r = random.randint(15, 75)
 
     circle(screen, set_random_color(), (x, y), r)
@@ -100,6 +100,19 @@ def check_click_hit(event, x, y, r):
         point_counter()
 
 
+def draw_area():
+    """
+    Функция, риующая границу, в которой
+    шарики будут отскакивать от стены
+    :return: None
+    """
+
+    line(screen, (255, 255, 255), (550, 550), (550, 50))
+    line(screen, (255, 255, 255), (550, 50), (50, 50))
+    line(screen, (255, 255, 255), (50, 50), (50, 550))
+    line(screen, (255, 255, 255), (50, 550), (550, 550))
+
+
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
@@ -112,6 +125,7 @@ while not finished:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             check_click_hit(event, x, y, r)
 
+    draw_area()
     print_number_of_point()
     create_new_ball()
     pygame.display.update()

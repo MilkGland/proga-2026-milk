@@ -15,8 +15,73 @@ pygame.init()
 '''
 
 _ALL_POINTS = 0
-FPS = 1
+FPS = 25
 screen = pygame.display.set_mode((600, 600))
+
+
+def set_random_color():
+    """
+    Функция, задающая случайный из 5 цветов каждому
+    новому созданному шарику
+    :return: random color
+    """
+
+    red = (255, 0, 0)
+    blue = (0, 0, 255)
+    yellow = (255, 255, 0)
+    green = (0, 255, 0)
+    magenta = (255, 0, 255)
+    cyan = (0, 255, 255)
+
+    colors = [red, blue, green, yellow, magenta, cyan]
+
+    return colors[random.randint(0, 5)]
+
+
+class Ball:
+
+    def __init__(self):
+        self.x = random.randint(100, 475)
+        self.y = random.randint(100, 475)
+        self.r = random.randint(15, 75)
+        self.balls = []
+
+
+    def create(self):
+
+        ball = {
+            "color": set_random_color(),
+            "x_coord": self.x,
+            "y_coord": self.y,
+            "radius": self.r,
+            "life_duration": FPS * 5,
+            "is_alive": True
+        }
+
+        self.balls.append(ball)
+
+
+    def move(self):
+
+        if len(self.balls) == 0:
+            self.create()
+
+        for ball in self.balls:
+            circle(screen, ball["color"],
+                    (ball["x_coord"], ball["y_coord"]),
+                     ball["radius"])
+
+            screen.fill('black')
+
+            speed_x = random.randint(-5, 5)
+            speed_y = random.randint(-5, 5)
+            ball["x_coord"] += speed_x
+            ball["y_coord"] += speed_y
+
+            circle(screen, ball["color"],
+                   (ball["x_coord"], ball["y_coord"]),
+                   ball["radius"])
+
 
 def print_number_of_point(point=0):
     """
@@ -43,43 +108,9 @@ def point_counter():
     """
 
     max_radius = 75
-    quantity_point = round(max_radius / r)
+    #quantity_point = round(max_radius / r)
 
-    print_number_of_point(quantity_point)
-
-
-def set_random_color():
-    """
-    Функция, задающая случайный цвет каждому новому созданному шарику
-    :return: random color
-    """
-
-    red = (255, 0, 0)
-    blue = (0, 0, 255)
-    yellow = (255, 255, 0)
-    green = (0, 255, 0)
-    magenta = (255, 0, 255)
-    cyan = (0, 255, 255)
-
-    colors = [red, blue, green, yellow, magenta, cyan]
-
-    return colors[random.randint(0, 5)]
-
-
-def create_new_ball():
-    """
-    Функция, создающая новый шарик со случайными радиусом r (от 10 до 100)
-    и координатами x, y (от 100 до 500)
-    :return: x, y, r
-    """
-
-    global x, y, r
-
-    x = random.randint(100, 475)
-    y = random.randint(100, 475)
-    r = random.randint(15, 75)
-
-    circle(screen, set_random_color(), (x, y), r)
+    #print_number_of_point(quantity_point)
 
 
 def check_click_hit(event, x, y, r):
@@ -100,15 +131,6 @@ def check_click_hit(event, x, y, r):
         point_counter()
 
 
-def ball_move():
-    """
-    Функция, определяющая скорость и движение шарика в границе и
-    очищающая шарик с экрана, если его время жизни истекает
-    :return: None
-    """
-    pass
-
-
 def draw_area():
     """
     Функция, риующая границу, в которой
@@ -125,20 +147,19 @@ def draw_area():
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
+ball = Ball()
 
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            check_click_hit(event, x, y, r)
+        #elif event.type == pygame.MOUSEBUTTONDOWN:
+            #check_click_hit(event, x, y, r)
 
     draw_area()
     print_number_of_point()
-    create_new_ball()
+    ball.move()
     pygame.display.update()
-
-    screen.fill('black')
 
 pygame.quit()

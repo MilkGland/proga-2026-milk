@@ -38,14 +38,18 @@ def set_random_color():
     return colors[random.randint(0, 5)]
 
 
-class Ball:
-
+class GameObject:
     def __init__(self):
         self.x = random.randint(100, 475)
         self.y = random.randint(100, 475)
         self.r = random.randint(15, 75)
         self.balls = []
 
+
+class Ball(GameObject):
+
+    def __init__(self):
+        super().__init__()
 
     def create(self):
 
@@ -83,52 +87,56 @@ class Ball:
                    ball["radius"])
 
 
-def print_number_of_point(point=0):
-    """
-    Функция, выводящая текущее количество очков
-    :return: None
-    """
-
-    global _ALL_POINTS
-    _ALL_POINTS += point
-
-    font = pygame.font.Font(None, 24)
-    point_printer = font.render("Number of points: " +
-                                 str(_ALL_POINTS),
-                                 True, (255, 255, 255))
-
-    screen.blit(point_printer, (25, 25))
-
-
-def point_counter():
-    """
-    Функция, подсчитывающая количество очков, которые получил
-    игрок за попадание в цель
-    :return: None
-    """
-
+class Points(GameObject):
     max_radius = 75
-    #quantity_point = round(max_radius / r)
 
-    #print_number_of_point(quantity_point)
+    def __init__(self):
+        super().__init__()
+        self.points = 0
+
+    def print_number_of_point(self, point=0):
+        """
+        Функция, выводящая текущее количество очков
+        :return: None
+        """
+
+        self.points += point
+
+        font = pygame.font.Font(None, 24)
+        point_printer = font.render("Number of points: " +
+                                     str(self.points),
+                                     True, (255, 255, 255))
+
+        screen.blit(point_printer, (25, 25))
 
 
-def check_click_hit(event, x, y, r):
-    """
-    Функция, проверяющая, попал ли пользователь кликом мышки по шарику.
-    :param x: координата x центра шарика
-    :param y: координата y центра шарика
-    :param r: радиус шарика
-    :return: None
-    """
-    click_x_coord = event.pos[0]
-    click_y_coord = event.pos[1]
+    def point_counter(self):
+        quantity_point = round(self.max_radius / self.r)
 
-    click_distance = ((click_x_coord - x)**2 +
-                      (click_y_coord - y)**2) ** 0.5
+        self.print_number_of_point(quantity_point)
 
-    if click_distance <= r:
-        point_counter()
+
+class Manager(GameObject):
+    def __init__(self):
+        super().__init__()
+        self.event = event
+
+    def check_click_hit(self, event, x, y, r):
+        """
+        Функция, проверяющая, попал ли пользователь кликом мышки по шарику.
+        :param x: координата x центра шарика
+        :param y: координата y центра шарика
+        :param r: радиус шарика
+        :return: None
+        """
+        click_x_coord = self.event.pos[0]
+        click_y_coord = self.event.pos[1]
+
+        click_distance = ((click_x_coord - self.x)**2 +
+                          (click_y_coord - self.y)**2) ** 0.5
+
+        if click_distance <= r:
+            pass #TODO: point_counter
 
 
 def draw_area():
@@ -148,17 +156,18 @@ pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
 ball = Ball()
+cur_point = Points()
 
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-        #elif event.type == pygame.MOUSEBUTTONDOWN:
-            #check_click_hit(event, x, y, r)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            pass #TODO
 
     draw_area()
-    print_number_of_point()
+    cur_point.print_number_of_point()
     ball.move()
     pygame.display.update()
 

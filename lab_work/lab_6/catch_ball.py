@@ -38,31 +38,26 @@ def set_random_color():
     return colors[random.randint(0, 5)]
 
 
-class GameObject:
+class Ball:
+
     def __init__(self):
         self.x = random.randint(100, 475)
         self.y = random.randint(100, 475)
         self.r = random.randint(15, 75)
         self.balls = []
 
-
-class Ball(GameObject):
-
-    def __init__(self):
-        super().__init__()
-
     def create(self):
 
-        ball = {
+        _ball = {
             "color": set_random_color(),
             "x_coord": self.x,
             "y_coord": self.y,
             "radius": self.r,
             "life_duration": FPS * 5,
             "is_alive": True
-        }
+                }
 
-        self.balls.append(ball)
+        self.balls.append(_ball)
 
 
     def move(self):
@@ -70,36 +65,32 @@ class Ball(GameObject):
         if len(self.balls) == 0:
             self.create()
 
-        for ball in self.balls:
-            circle(screen, ball["color"],
-                    (ball["x_coord"], ball["y_coord"]),
-                     ball["radius"])
+        for ball_ in self.balls:
+            circle(screen, ball_["color"],
+                   (ball_["x_coord"], ball_["y_coord"]),
+                   ball_["radius"])
 
             screen.fill('black')
 
             speed_x = random.randint(-5, 5)
             speed_y = random.randint(-5, 5)
-            ball["x_coord"] += speed_x
-            ball["y_coord"] += speed_y
+            ball_["x_coord"] += speed_x
+            ball_["y_coord"] += speed_y
+            self.x += speed_x
+            self.y += speed_y
 
-            circle(screen, ball["color"],
-                   (ball["x_coord"], ball["y_coord"]),
-                   ball["radius"])
+            circle(screen, ball_["color"],
+                   (ball_["x_coord"], ball_["y_coord"]),
+                   ball_["radius"])
 
 
-class Points(GameObject):
+class ScoreTable:
     max_radius = 75
 
     def __init__(self):
-        super().__init__()
         self.points = 0
 
     def print_number_of_point(self, point=0):
-        """
-        Функция, выводящая текущее количество очков
-        :return: None
-        """
-
         self.points += point
 
         font = pygame.font.Font(None, 24)
@@ -111,64 +102,55 @@ class Points(GameObject):
 
 
     def point_counter(self):
-        quantity_point = round(self.max_radius / self.r)
+        quantity_point = round(self.max_radius / ball.r)
 
         self.print_number_of_point(quantity_point)
 
 
-class Manager(GameObject):
-    def __init__(self):
-        super().__init__()
-        self.event = event
+class Manager:
+    def __init__(self, event_):
+        self.event = event_
 
-    def check_click_hit(self, event, x, y, r):
-        """
-        Функция, проверяющая, попал ли пользователь кликом мышки по шарику.
-        :param x: координата x центра шарика
-        :param y: координата y центра шарика
-        :param r: радиус шарика
-        :return: None
-        """
+    def check_click_hit(self):
         click_x_coord = self.event.pos[0]
         click_y_coord = self.event.pos[1]
 
-        click_distance = ((click_x_coord - self.x)**2 +
-                          (click_y_coord - self.y)**2) ** 0.5
+        click_distance = ((click_x_coord - ball.x)**2 +
+                          (click_y_coord - ball.y)**2) ** 0.5
 
-        if click_distance <= r:
-            pass #TODO: point_counter
+        if click_distance <= ball.r:
+            points.point_counter()
 
 
 def draw_area():
-    """
-    Функция, риующая границу, в которой
-    шарики будут отскакивать от стены
-    :return: None
-    """
-
     line(screen, (255, 255, 255), (550, 550), (550, 50))
     line(screen, (255, 255, 255), (550, 50), (50, 50))
     line(screen, (255, 255, 255), (50, 50), (50, 550))
     line(screen, (255, 255, 255), (50, 550), (550, 550))
 
 
-pygame.display.update()
 clock = pygame.time.Clock()
-finished = False
 ball = Ball()
-cur_point = Points()
+points = ScoreTable()
+
+finished = False
+pygame.display.update()
+
 
 while not finished:
     clock.tick(FPS)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            pass #TODO
 
-    draw_area()
-    cur_point.print_number_of_point()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            manager = Manager(event)
+            manager.check_click_hit()
+
     ball.move()
+    draw_area()
+    points.print_number_of_point()
     pygame.display.update()
 
 pygame.quit()

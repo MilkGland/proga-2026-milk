@@ -16,7 +16,8 @@ pygame.init()
 
 _ALL_POINTS = 0
 FPS = 25
-screen = pygame.display.set_mode((600, 600))
+SCREEN_PARAMETER = (600, 600)
+screen = pygame.display.set_mode(SCREEN_PARAMETER)
 
 
 def set_random_color():
@@ -39,15 +40,15 @@ def set_random_color():
 
 
 class Ball:
-
     def __init__(self):
         self.x = random.randint(100, 475)
         self.y = random.randint(100, 475)
         self.r = random.randint(15, 75)
+        self.speed_x = random.randint(-5, 5)
+        self.speed_y = random.randint(-5, 5)
         self.balls = []
 
     def create(self):
-
         _ball = {
             "color": set_random_color(),
             "x_coord": self.x,
@@ -58,7 +59,6 @@ class Ball:
                 }
 
         self.balls.append(_ball)
-
 
     def move(self):
 
@@ -72,12 +72,10 @@ class Ball:
 
             screen.fill('black')
 
-            speed_x = random.randint(-5, 5)
-            speed_y = random.randint(-5, 5)
-            ball_["x_coord"] += speed_x
-            ball_["y_coord"] += speed_y
-            self.x += speed_x
-            self.y += speed_y
+            ball_["x_coord"] += self.speed_x
+            ball_["y_coord"] += self.speed_y
+            self.x += self.speed_x
+            self.y += self.speed_y
 
             circle(screen, ball_["color"],
                    (ball_["x_coord"], ball_["y_coord"]),
@@ -85,7 +83,7 @@ class Ball:
 
 
 class ScoreTable:
-    max_radius = 75
+    _max_radius = 75
 
     def __init__(self):
         self.points = 0
@@ -100,20 +98,56 @@ class ScoreTable:
 
         screen.blit(point_printer, (25, 25))
 
-
     def point_counter(self):
-        quantity_point = round(self.max_radius / ball.r)
+        quantity_point = round(self._max_radius / ball.r)
 
         self.print_number_of_point(quantity_point)
 
 
-class Manager:
-    def __init__(self, event_):
-        self.event = event_
+class Area:
+    indent = 50
 
-    def check_click_hit(self):
-        click_x_coord = self.event.pos[0]
-        click_y_coord = self.event.pos[1]
+    @staticmethod
+    def get_parameter():
+        x_parameter = {"left-hand limit": Area.indent,
+                        "right-hand limit": SCREEN_PARAMETER[0] -
+                                             Area.indent}
+
+        y_parameter = {"lower limit": Area.indent,
+                        "upper limit": SCREEN_PARAMETER[1] -
+                                        Area.indent}
+
+        return x_parameter, y_parameter
+
+    @staticmethod
+    def draw():
+        width_end_pos = SCREEN_PARAMETER[0] - Area.indent
+        height_end_pos = SCREEN_PARAMETER[1] - Area.indent
+        width_start_pos = Area.indent
+        height_start_pos = Area.indent
+
+        line(screen, (255, 255, 255),
+             (width_end_pos, height_end_pos),
+             (width_end_pos, height_start_pos))
+
+        line(screen, (255, 255, 255),
+             (width_end_pos, height_start_pos),
+             (width_start_pos, height_start_pos))
+
+        line(screen, (255, 255, 255),
+             (width_start_pos, height_start_pos),
+             (width_start_pos, height_end_pos))
+
+        line(screen, (255, 255, 255),
+             (width_start_pos, height_end_pos),
+             (width_end_pos, height_end_pos))
+
+
+class Manager:
+    @staticmethod
+    def check_click_hit(event_):
+        click_x_coord = event_.pos[0]
+        click_y_coord = event_.pos[1]
 
         click_distance = ((click_x_coord - ball.x)**2 +
                           (click_y_coord - ball.y)**2) ** 0.5
@@ -121,17 +155,23 @@ class Manager:
         if click_distance <= ball.r:
             points.point_counter()
 
+    @staticmethod
+    def check_collation():
+        x_area_param, y_area_param = Area.get_parameter()
 
-def draw_area():
-    line(screen, (255, 255, 255), (550, 550), (550, 50))
-    line(screen, (255, 255, 255), (550, 50), (50, 50))
-    line(screen, (255, 255, 255), (50, 50), (50, 550))
-    line(screen, (255, 255, 255), (50, 550), (550, 550))
+        if (ball.x - ball.r <= x_area_param["left-hand limit"] or
+             ball.x + ball.r >= x_area_param["right-hand limit"]):
+            ball.speed_x = -ball.speed_x
+
+        if (ball.y - ball.r <= y_area_param["lower limit"] or
+             ball.y + ball.r >= y_area_param["upper limit"]):
+            ball.speed_y = -ball.speed_y
 
 
 clock = pygame.time.Clock()
 ball = Ball()
 points = ScoreTable()
+manager = Manager()
 
 finished = False
 pygame.display.update()
@@ -145,12 +185,11 @@ while not finished:
             finished = True
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            manager = Manager(event)
-            manager.check_click_hit()
+            manager.check_click_hit(event)
 
     ball.move()
-    draw_area()
+    manager.check_collation()
+    Area.draw()
     points.print_number_of_point()
     pygame.display.update()
-
 pygame.quit()

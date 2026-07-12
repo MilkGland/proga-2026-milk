@@ -53,20 +53,24 @@ class Ball:
         self.balls = []
 
     def move(self):
+        screen.fill('black')
 
         circle(screen, self.color,
                (self.x, self.y),
                self.r)
-
-        screen.fill('black')
 
         self.x += self.speed_x
         self.y += self.speed_y
 
-        circle(screen, self.color,
-               (self.x, self.y),
-               self.r)
+    def is_clicked(self, event_):
+        click_x_coord = event_.pos[0]
+        click_y_coord = event_.pos[1]
 
+        click_distance = ((click_x_coord - self.x)**2 +
+                          (click_y_coord - self.y)**2) ** 0.5
+
+        if click_distance <= self.r:
+            points.point_counter()
 
 class ScoreTable:
     _max_radius = 75
@@ -131,17 +135,6 @@ class Area:
 
 class Manager:
     @staticmethod
-    def check_click_hit(event_):
-        click_x_coord = event_.pos[0]
-        click_y_coord = event_.pos[1]
-
-        click_distance = ((click_x_coord - ball.x)**2 +
-                          (click_y_coord - ball.y)**2) ** 0.5
-
-        if click_distance <= ball.r:
-            points.point_counter()
-
-    @staticmethod
     def check_collation():
         x_area_param, y_area_param = Area.get_parameter()
 
@@ -149,8 +142,8 @@ class Manager:
              ball.x + ball.r >= x_area_param["right-hand limit"]):
             ball.speed_x = -ball.speed_x
 
-        elif (ball.y - ball.r <= y_area_param["lower limit"] or
-             ball.y + ball.r >= y_area_param["upper limit"]):
+        elif (ball.y - ball.r < y_area_param["lower limit"] or
+             ball.y + ball.r > y_area_param["upper limit"]):
             ball.speed_y = -ball.speed_y
 
 
@@ -158,7 +151,6 @@ clock = pygame.time.Clock()
 ball = Ball()
 points = ScoreTable()
 manager = Manager()
-
 finished = False
 pygame.display.update()
 
@@ -171,7 +163,7 @@ while not finished:
             finished = True
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            manager.check_click_hit(event)
+            ball.is_clicked(event)
 
     ball.move()
     manager.check_collation()

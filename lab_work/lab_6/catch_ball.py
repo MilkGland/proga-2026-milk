@@ -46,40 +46,26 @@ class Ball:
         self.r = random.randint(15, 75)
         self.speed_x = random.randint(-5, 5)
         self.speed_y = random.randint(-5, 5)
+
+        self.color = set_random_color()
+        self.life_duration = FPS * 5
+        self.is_alive = True
         self.balls = []
-
-    def create(self):
-        _ball = {
-            "color": set_random_color(),
-            "x_coord": self.x,
-            "y_coord": self.y,
-            "radius": self.r,
-            "life_duration": FPS * 5,
-            "is_alive": True
-                }
-
-        self.balls.append(_ball)
 
     def move(self):
 
-        if len(self.balls) == 0:
-            self.create()
+        circle(screen, self.color,
+               (self.x, self.y),
+               self.r)
 
-        for ball_ in self.balls:
-            circle(screen, ball_["color"],
-                   (ball_["x_coord"], ball_["y_coord"]),
-                   ball_["radius"])
+        screen.fill('black')
 
-            screen.fill('black')
+        self.x += self.speed_x
+        self.y += self.speed_y
 
-            ball_["x_coord"] += self.speed_x
-            ball_["y_coord"] += self.speed_y
-            self.x += self.speed_x
-            self.y += self.speed_y
-
-            circle(screen, ball_["color"],
-                   (ball_["x_coord"], ball_["y_coord"]),
-                   ball_["radius"])
+        circle(screen, self.color,
+               (self.x, self.y),
+               self.r)
 
 
 class ScoreTable:
@@ -163,7 +149,7 @@ class Manager:
              ball.x + ball.r >= x_area_param["right-hand limit"]):
             ball.speed_x = -ball.speed_x
 
-        if (ball.y - ball.r <= y_area_param["lower limit"] or
+        elif (ball.y - ball.r <= y_area_param["lower limit"] or
              ball.y + ball.r >= y_area_param["upper limit"]):
             ball.speed_y = -ball.speed_y
 
@@ -192,4 +178,5 @@ while not finished:
     Area.draw()
     points.print_number_of_point()
     pygame.display.update()
+
 pygame.quit()

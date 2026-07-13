@@ -5,8 +5,6 @@ import random
 pygame.init()
 
 '''
-3 Сделать шарики двигающимися со случайным отражением от стен.
-4 Реализовать одновременное присутствие нескольких шариков на экране.
 5 Добавить второй тип мишени со своей формой и своим специфическим харктером движения.
 6 Выдавать за эти мишени другое количество очков.
 7 Сделать таблицу лучших игроков, автоматически сохраняющуюся в файл.
@@ -46,8 +44,7 @@ class Ball:
         self.speed_y = random.randint(-5, 5)
 
         self.color = set_random_color()
-        self.life_duration = FPS * 5
-        self.is_alive = True
+        self.life_duration = FPS * 30
 
     def move(self):
         screen.fill('black')
@@ -58,6 +55,7 @@ class Ball:
 
         self.x += self.speed_x
         self.y += self.speed_y
+        self.life_duration -= 1
 
     @staticmethod
     def is_clicked(ball, event_):
@@ -104,6 +102,23 @@ class ScoreTable:
         self.print_number_of_point(quantity_point)
 
 
+class Manager:
+    time_between_additions = 0
+
+    @staticmethod
+    def add_ball():
+        Manager.time_between_additions += 1
+
+        if Manager.time_between_additions == FPS * 5:
+            balls.append(Ball())
+            Manager.time_between_additions = 0
+
+    @staticmethod
+    def ball_is_alive(ball):
+        if ball.life_duration <= 0:
+            balls.remove(ball)
+
+
 class Area:
     indent = 50
 
@@ -143,30 +158,40 @@ class Area:
              (width_end_pos, height_end_pos))
 
 
-clock = pygame.time.Clock()
+def main():
+    finished = False
+    while not finished:
+        clock.tick(FPS)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                finished = True
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for ball in balls:
+                    Ball.is_clicked(ball, event)
+
+        Manager.add_ball()
+        if balls:
+            for ball in balls:
+                Manager.ball_is_alive(ball)
+                ball.move()
+                ball.is_collided()
+                Area.draw()
+                points.print_number_of_point()
+                pygame.display.update()
+        else:
+            screen.fill('black')
+            Area.draw()
+            points.print_number_of_point()
+            pygame.display.update()
+
+
 ball = Ball()
-ball2 = Ball()
+balls = [ball]
+clock = pygame.time.Clock()
 points = ScoreTable()
-balls = [ball, ball2]
 pygame.display.update()
 
-finished = False
-while not finished:
-    clock.tick(FPS)
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            finished = True
-
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            for ball in balls:
-                Ball.is_clicked(ball, event)
-
-    for ball in balls:
-        ball.move()
-        ball.is_collided()
-        Area.draw()
-        points.print_number_of_point()
-        pygame.display.update()
-
+main()
 pygame.quit()

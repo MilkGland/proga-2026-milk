@@ -5,8 +5,6 @@ import random
 pygame.init()
 
 '''
-1 Сделать код читабельным и документированным.
-2 Реализовать подсчёт очков.
 3 Сделать шарики двигающимися со случайным отражением от стен.
 4 Реализовать одновременное присутствие нескольких шариков на экране.
 5 Добавить второй тип мишени со своей формой и своим специфическим харктером движения.
@@ -41,36 +39,48 @@ def set_random_color():
 
 class Ball:
     def __init__(self):
-        self.x = random.randint(100, 475)
-        self.y = random.randint(100, 475)
-        self.r = random.randint(15, 75)
+        self.x = random.randint(100, 450)
+        self.y = random.randint(100, 450)
+        self.radius = random.randint(15, 75)
         self.speed_x = random.randint(-5, 5)
         self.speed_y = random.randint(-5, 5)
 
         self.color = set_random_color()
         self.life_duration = FPS * 5
         self.is_alive = True
-        self.balls = []
 
     def move(self):
         screen.fill('black')
 
         circle(screen, self.color,
                (self.x, self.y),
-               self.r)
+               self.radius)
 
         self.x += self.speed_x
         self.y += self.speed_y
 
-    def is_clicked(self, event_):
+    @staticmethod
+    def is_clicked(ball, event_):
         click_x_coord = event_.pos[0]
         click_y_coord = event_.pos[1]
 
-        click_distance = ((click_x_coord - self.x)**2 +
-                          (click_y_coord - self.y)**2) ** 0.5
+        click_distance = ((click_x_coord - ball.x)**2 +
+                          (click_y_coord - ball.y)**2) ** 0.5
 
-        if click_distance <= self.r:
-            points.point_counter()
+        if click_distance <= ball.radius:
+            points.point_counter(ball)
+            balls.remove(ball)
+
+    def is_collided(self):
+        x_area_param, y_area_param = Area.get_parameter()
+
+        if (self.x - self.radius <= x_area_param["left-hand limit"] or
+             self.x + self.radius >= x_area_param["right-hand limit"]):
+            self.speed_x = -self.speed_x
+
+        elif (self.y - self.radius < y_area_param["lower limit"] or
+              self.y + self.radius > y_area_param["upper limit"]):
+            self.speed_y = -self.speed_y
 
 class ScoreTable:
     _max_radius = 75
@@ -88,8 +98,8 @@ class ScoreTable:
 
         screen.blit(point_printer, (25, 25))
 
-    def point_counter(self):
-        quantity_point = round(self._max_radius / ball.r)
+    def point_counter(self, ball):
+        quantity_point = round(self._max_radius / ball.radius)
 
         self.print_number_of_point(quantity_point)
 
@@ -133,28 +143,14 @@ class Area:
              (width_end_pos, height_end_pos))
 
 
-class Manager:
-    @staticmethod
-    def check_collation():
-        x_area_param, y_area_param = Area.get_parameter()
-
-        if (ball.x - ball.r <= x_area_param["left-hand limit"] or
-             ball.x + ball.r >= x_area_param["right-hand limit"]):
-            ball.speed_x = -ball.speed_x
-
-        elif (ball.y - ball.r < y_area_param["lower limit"] or
-             ball.y + ball.r > y_area_param["upper limit"]):
-            ball.speed_y = -ball.speed_y
-
-
 clock = pygame.time.Clock()
 ball = Ball()
+ball2 = Ball()
 points = ScoreTable()
-manager = Manager()
-finished = False
+balls = [ball, ball2]
 pygame.display.update()
 
-
+finished = False
 while not finished:
     clock.tick(FPS)
 
@@ -163,12 +159,14 @@ while not finished:
             finished = True
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            ball.is_clicked(event)
+            for ball in balls:
+                Ball.is_clicked(ball, event)
 
-    ball.move()
-    manager.check_collation()
-    Area.draw()
-    points.print_number_of_point()
-    pygame.display.update()
+    for ball in balls:
+        ball.move()
+        ball.is_collided()
+        Area.draw()
+        points.print_number_of_point()
+        pygame.display.update()
 
 pygame.quit()

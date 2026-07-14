@@ -78,6 +78,18 @@ class Ball:
               self.y + self.radius > y_area_param["upper limit"]):
             self.speed_y = -self.speed_y
 
+
+class Cube:
+    def __init__(self):
+        pass
+
+    def move(self):
+        pass
+
+    def is_collided(self):
+        pass
+
+
 class ScoreTable:
     _max_radius = 75
 
@@ -115,6 +127,18 @@ class Manager:
     def ball_is_alive(ball):
         if ball.life_duration <= 0:
             balls.remove(ball)
+
+    @staticmethod
+    def add_cube():
+        Manager.time_between_additions += 1
+
+        if Manager.time_between_additions == FPS * 5:
+            cubes.append(Cube())
+            Manager.time_between_additions = 0
+
+    @staticmethod
+    def cube_is_alive(cube):
+        pass
 
 
 class Area:
@@ -161,7 +185,7 @@ def main():
     while not finished:
         clock.tick(FPS)
         screen.fill('black')
-        Manager.add_ball()
+        random.choice([Manager.add_ball(), Manager.add_cube()])
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -170,6 +194,14 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for ball in balls:
                     Ball.is_clicked(ball, event)
+
+        if cubes:
+            for cube in cubes:
+                Manager.cube_is_alive(cube)
+                cube.move()
+                cube.is_collided()
+                Area.draw()
+                points.print_number_of_point()
 
         if balls:
             for ball in balls:
@@ -187,6 +219,7 @@ def main():
         pygame.display.update()
 
 
+cubes = [Cube()]
 balls = [Ball()]
 clock = pygame.time.Clock()
 points = ScoreTable()

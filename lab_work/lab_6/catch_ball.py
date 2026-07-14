@@ -47,8 +47,6 @@ class Ball:
         self.life_duration = FPS * 30
 
     def move(self):
-        screen.fill('black')
-
         circle(screen, self.color,
                (self.x, self.y),
                self.radius)
@@ -94,7 +92,7 @@ class ScoreTable:
                                      str(self.points),
                                      True, (255, 255, 255))
 
-        screen.blit(point_printer, (25, 25))
+        screen.blit(point_printer, (50, 25))
 
     def point_counter(self, ball):
         quantity_point = round(self._max_radius / ball.radius)
@@ -162,6 +160,8 @@ def main():
     finished = False
     while not finished:
         clock.tick(FPS)
+        screen.fill('black')
+        Manager.add_ball()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -171,7 +171,6 @@ def main():
                 for ball in balls:
                     Ball.is_clicked(ball, event)
 
-        Manager.add_ball()
         if balls:
             for ball in balls:
                 Manager.ball_is_alive(ball)
@@ -179,16 +178,16 @@ def main():
                 ball.is_collided()
                 Area.draw()
                 points.print_number_of_point()
-                pygame.display.update()
+
         else:
-            screen.fill('black')
             Area.draw()
             points.print_number_of_point()
             pygame.display.update()
 
+        pygame.display.update()
 
-ball = Ball()
-balls = [ball]
+
+balls = [Ball()]
 clock = pygame.time.Clock()
 points = ScoreTable()
 pygame.display.update()

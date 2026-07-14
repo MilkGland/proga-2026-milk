@@ -5,7 +5,6 @@ import random
 pygame.init()
 
 '''
-5 Добавить второй тип мишени со своей формой и своим специфическим харктером движения.
 6 Выдавать за эти мишени другое количество очков.
 7 Сделать таблицу лучших игроков, автоматически сохраняющуюся в файл.
 '''
@@ -40,8 +39,10 @@ class Ball:
         self.x = random.randint(100, 450)
         self.y = random.randint(100, 450)
         self.radius = random.randint(15, 75)
-        self.speed_x = random.randint(-5, 5)
-        self.speed_y = random.randint(-5, 5)
+        self.speed_x = random.choice([-5, -4, -3, -2, -1,
+                                       5, 4, 3, 2, 1])
+        self.speed_y = random.choice([-5, -4, -3, -2, -1,
+                                       5, 4, 3, 2, 1])
 
         self.color = set_random_color()
         self.life_duration = FPS * 15
@@ -55,18 +56,6 @@ class Ball:
         self.y += self.speed_y
         self.life_duration -= 1
 
-    @staticmethod
-    def is_clicked(ball, event_):
-        click_x_coord = event_.pos[0]
-        click_y_coord = event_.pos[1]
-
-        click_distance = ((click_x_coord - ball.x)**2 +
-                          (click_y_coord - ball.y)**2) ** 0.5
-
-        if click_distance <= ball.radius:
-            points.point_counter(ball)
-            balls.remove(ball)
-
     def is_collided(self):
         x_area_param, y_area_param = Area.get_parameter()
 
@@ -78,6 +67,17 @@ class Ball:
               self.y + self.radius > y_area_param["upper limit"]):
             self.speed_y = -self.speed_y
 
+    @staticmethod
+    def is_clicked(ball, event_):
+        click_x_coord = event_.pos[0]
+        click_y_coord = event_.pos[1]
+
+        click_distance = ((click_x_coord - ball.x) ** 2 +
+                          (click_y_coord - ball.y) ** 2) ** 0.5
+
+        if click_distance <= ball.radius:
+            points.ball_point_counter(ball)
+            balls.remove(ball)
 
 class Cube:
     def __init__(self):
@@ -104,6 +104,15 @@ class Cube:
                 self.x + self.width >= x_area_param["right-hand limit"]):
             self.speed_x = -self.speed_x
 
+    @staticmethod
+    def is_clicked(cube, event_):
+        click_x_coord = event_.pos[0]
+        click_y_coord = event_.pos[1]
+
+        if True:
+            points.cube_point_counter(cube)
+            cubes.remove(cube)
+
 
 class ScoreTable:
     _max_radius = 75
@@ -121,10 +130,13 @@ class ScoreTable:
 
         screen.blit(point_printer, (50, 25))
 
-    def point_counter(self, ball):
+    def ball_point_counter(self, ball):
         quantity_point = round(self._max_radius / ball.radius)
 
         self.print_number_of_point(quantity_point)
+
+    def cube_point_counter(self, cube):
+        pass
 
 
 class Manager:
@@ -201,6 +213,8 @@ def main():
     while not finished:
         clock.tick(FPS)
         screen.fill('black')
+        Area.draw()
+        points.print_number_of_point()
         random.choice([Manager.add_ball(), Manager.add_cube()])
 
         for event in pygame.event.get():
@@ -211,21 +225,20 @@ def main():
                 for ball in balls:
                     Ball.is_clicked(ball, event)
 
+                for cube in cubes:
+                    Cube.is_clicked(cube, event)
+
         if cubes:
             for cube in cubes:
                 Manager.cube_is_alive(cube)
                 cube.move()
                 cube.is_collided()
-                Area.draw()
-                points.print_number_of_point()
 
         if balls:
             for ball in balls:
                 Manager.ball_is_alive(ball)
                 ball.move()
                 ball.is_collided()
-                Area.draw()
-                points.print_number_of_point()
 
         else:
             Area.draw()

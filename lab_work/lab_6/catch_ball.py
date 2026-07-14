@@ -44,7 +44,7 @@ class Ball:
         self.speed_y = random.randint(-5, 5)
 
         self.color = set_random_color()
-        self.life_duration = FPS * 30
+        self.life_duration = FPS * 15
 
     def move(self):
         circle(screen, self.color,
@@ -81,13 +81,28 @@ class Ball:
 
 class Cube:
     def __init__(self):
-        pass
+        self.x = random.randint(100, 450)
+        self.y = random.randint(100, 450)
+        self.width = random.randint(15, 45)
+        self.height = self.width
+        self.speed_x = random.choice([-5, -4, -3, 3, 4, 5])
+
+        self.color = set_random_color()
+        self.life_duration = FPS * 15
 
     def move(self):
-        pass
+        rect(screen, self.color, (self.x, self.y,
+                                        self.width, self.height))
+
+        self.x += self.speed_x
+        self.life_duration -= 1
 
     def is_collided(self):
-        pass
+        x_area_param, y_area_param = Area.get_parameter()
+
+        if (self.x - self.width <= x_area_param["left-hand limit"] or
+                self.x + self.width >= x_area_param["right-hand limit"]):
+            self.speed_x = -self.speed_x
 
 
 class ScoreTable:
@@ -138,7 +153,8 @@ class Manager:
 
     @staticmethod
     def cube_is_alive(cube):
-        pass
+        if cube.life_duration <= 0:
+            cubes.remove(cube)
 
 
 class Area:

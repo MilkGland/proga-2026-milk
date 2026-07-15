@@ -5,14 +5,8 @@ import random
 pygame.init()
 
 '''
-6 Выдавать за эти мишени другое количество очков.
 7 Сделать таблицу лучших игроков, автоматически сохраняющуюся в файл.
 '''
-
-_ALL_POINTS = 0
-FPS = 25
-SCREEN_PARAMETER = (600, 600)
-screen = pygame.display.set_mode(SCREEN_PARAMETER)
 
 
 def set_random_color():
@@ -36,8 +30,8 @@ def set_random_color():
 
 class Ball:
     def __init__(self):
-        self.x = random.randint(100, 450)
-        self.y = random.randint(100, 450)
+        self.x = random.randint(125, 450)
+        self.y = random.randint(125, 450)
         self.radius = random.randint(15, 75)
         self.speed_x = random.choice([-5, -4, -3, -2, -1,
                                        5, 4, 3, 2, 1])
@@ -79,6 +73,7 @@ class Ball:
             points.ball_point_counter(ball)
             balls.remove(ball)
 
+
 class Cube:
     def __init__(self):
         self.x = random.randint(100, 450)
@@ -100,8 +95,8 @@ class Cube:
     def is_collided(self):
         x_area_param, y_area_param = Area.get_parameter()
 
-        if (self.x - self.width <= x_area_param["left-hand limit"] or
-                self.x + self.width >= x_area_param["right-hand limit"]):
+        if (self.x < x_area_param["left-hand limit"] or
+                self.x + self.width > x_area_param["right-hand limit"]):
             self.speed_x = -self.speed_x
 
     @staticmethod
@@ -109,13 +104,19 @@ class Cube:
         click_x_coord = event_.pos[0]
         click_y_coord = event_.pos[1]
 
-        if True:
-            points.cube_point_counter(cube)
-            cubes.remove(cube)
+        if (cube.x <= click_x_coord and not
+            cube.x + cube.width <= click_x_coord):
+
+            if (cube.y <= click_y_coord and not
+                cube.y + cube.height <= click_y_coord):
+
+                points.cube_point_counter(cube)
+                cubes.remove(cube)
 
 
 class ScoreTable:
     _max_radius = 75
+    _max_perimeter = (45 + 45) * 2
 
     def __init__(self):
         self.points = 0
@@ -136,7 +137,10 @@ class ScoreTable:
         self.print_number_of_point(quantity_point)
 
     def cube_point_counter(self, cube):
-        pass
+        quantity_point = int(self._max_perimeter / (cube.width +
+                                                      cube.height) * 2)
+
+        self.print_number_of_point(quantity_point)
 
 
 class Manager:
@@ -247,6 +251,10 @@ def main():
 
         pygame.display.update()
 
+
+FPS = 25
+SCREEN_PARAMETER = (600, 600)
+screen = pygame.display.set_mode(SCREEN_PARAMETER)
 
 cubes = [Cube()]
 balls = [Ball()]

@@ -147,6 +147,10 @@ class Manager:
     time_between_additions = 0
 
     @staticmethod
+    def write_down_a_record(record):
+        pass
+
+    @staticmethod
     def add_ball():
         Manager.time_between_additions += 1
 
@@ -250,6 +254,8 @@ def main():
             pygame.display.update()
 
         pygame.display.update()
+
+    Manager.write_down_a_record(points.points)
 
 
 FPS = 25

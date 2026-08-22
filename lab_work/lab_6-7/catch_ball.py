@@ -148,7 +148,9 @@ class Manager:
 
     @staticmethod
     def write_down_a_record(record):
-        pass
+        with open(catch_ball_records, mode='r+') as sourse:
+            # FIXME: incorrect write down a record in file
+            sourse.write(str(record))
 
     @staticmethod
     def add_ball():
@@ -261,6 +263,7 @@ def main():
 FPS = 25
 SCREEN_PARAMETER = (600, 600)
 screen = pygame.display.set_mode(SCREEN_PARAMETER)
+catch_ball_records = 'catch_ball_records'
 
 cubes = [Cube()]
 balls = [Ball()]

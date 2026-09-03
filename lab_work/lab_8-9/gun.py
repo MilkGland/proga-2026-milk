@@ -1,13 +1,12 @@
-from random import randrange as rnd, choice
+from random import randrange, choice
 import tkinter as tk
 import math
 import time
 
-root = tk.Tk()
-fr = tk.Frame(root)
-root.geometry('800x600')
-canvas = tk.Canvas(root, bg='white')
-canvas.pack(fill=tk.BOTH, expand=1)
+root = tk.Tk()  # Управление библиотекой
+root.geometry('800x600')  # Размер окна
+canvas = tk.Canvas(root, bg='white')  # Виджет для рисования фигур
+canvas.pack(fill=tk.BOTH, expand=True)  # Управление виджетами
 
 
 class Ball:
@@ -21,25 +20,25 @@ class Ball:
         self.x = x
         self.y = y
         self.r = 10
-        self.vx = 0
-        self.vy = 0
+        self.vx = 1
+        self.vy = 10
         self.color = choice(['blue', 'green', 'red', 'brown'])
         self.id = canvas.create_oval(
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r,
-                fill=self.color
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r,
+            fill=self.color
         )
         self.live = 30
 
     def set_coords(self):
         canvas.coords(
-                self.id,
-                self.x - self.r,
-                self.y - self.r,
-                self.x + self.r,
-                self.y + self.r
+            self.id,
+            self.x - self.r,
+            self.y - self.r,
+            self.x + self.r,
+            self.y + self.r
         )
 
     def move(self):
@@ -51,11 +50,14 @@ class Ball:
         и стен по краям окна (размер окна 800х600).
         """
 
-        # FIXME
+        self.set_coords()
+
         self.x += self.vx
         self.y -= self.vy
 
-    def hittest(self, obj):
+
+
+    def is_strikes(self, obj):
         """
         Функция проверяет сталкивалкивается ли данный обьект с целью,
         описываемой в обьекте obj.
@@ -73,12 +75,12 @@ class Gun:
         self.f2_power = 10
         self.f2_on = 0
         self.an = 1
-        self.id = canvas.create_line(20,450,50,420,width=7) # FIXME: don't know how to set it...
+        self.id = canvas.create_line(20, 450, 50, 420, width=7) # FIXME: don't know how to set it...
 
-    def fire2_start(self, event):
+    def shoot_start(self, event):
         self.f2_on = 1
 
-    def fire2_end(self, event):
+    def shoot_end(self, event):
         """
         Выстрел мячом, происходит при отпускании кнопки мыши.
         Начальные значения компонент скорости мяча vx и
@@ -106,20 +108,24 @@ class Gun:
 
         if event:
             self.an = math.atan((event.y-450) / (event.x-20))
+
         if self.f2_on:
             canvas.itemconfig(self.id, fill='orange')
+
         else:
             canvas.itemconfig(self.id, fill='black')
+
         canvas.coords(self.id, 20, 450,
                     20 + max(self.f2_power, 20) * math.cos(self.an),
                     450 + max(self.f2_power, 20) * math.sin(self.an)
                     )
 
-    def power_up(self):
+    def shot_power(self):
         if self.f2_on:
             if self.f2_power < 100:
                 self.f2_power += 1
             canvas.itemconfig(self.id, fill='orange')
+
         else:
             canvas.itemconfig(self.id, fill='black')
 
@@ -127,26 +133,22 @@ class Gun:
 class Target:
     def __init__(self):
         self.points = 0
-        self.live = 1
-        self.x = rnd(600, 780)
-        self.y = rnd(300, 550)
-        self.r = rnd(2, 50)
+        self.is_alive = True
+        self.x = randrange(600, 780)
+        self.y = randrange(300, 550)
+        self.r = randrange(2, 50)
         self.color = 'red'
     # FIXME: don't work!!! How to call this functions when object is created?
         self.id = canvas.create_oval(0,0,0,0)
         self.id_points = canvas.create_text(30,30,text = self.points,font = '28')
-        #self.new_target()
+        #self.create_new_target()
 
-    def new_target(self):
-        """
-        Инициализация новой цели.
-        """
-
+    def create_new_target(self):
         canvas.coords(self.id, self.x - self.r, self.y - self.r,
                              self.x + self.r, self.y + self.r)
         canvas.itemconfig(self.id, fill=self.color)
 
-    def hit(self, points=1):
+    def defeated(self, points=1):
         """
         Попадание шарика в цель.
         :param points:
@@ -156,38 +158,39 @@ class Target:
         canvas.itemconfig(self.id_points, text=self.points)
 
 
-t1 = Target()
+target = Target()
 screen1 = canvas.create_text(400, 300, text='', font='28')
-g1 = Gun()
+gun = Gun()
 bullet = 0
 balls = []
 
 
 def new_game(event=''):
-    global Gun, t1, screen1, balls, bullet
-    t1.new_target()
-    bullet = 0
-    balls = []
-    canvas.bind('<Button-1>', g1.fire2_start)
-    canvas.bind('<ButtonRelease-1>', g1.fire2_end)
-    canvas.bind('<Motion>', g1.targeting)
+    global gun, target, screen1, balls, bullet
 
-    t1.live = 1
-    while t1.live or balls:
+    target.create_new_target()  # ???
+    canvas.bind('<Button-1>', gun.shoot_start)
+    canvas.bind('<ButtonRelease-1>', gun.shoot_end)
+    canvas.bind('<Motion>', gun.targeting)
+
+    while target.is_alive or balls:
         for b in balls:
             b.move()
-            if b.hittest(t1) and t1.live:
-                t1.live = 0
-                t1.hit()
+
+            if b.is_strikes(target) and target.is_alive:
+                target.is_alive = False
+                target.defeated()
                 canvas.bind('<Button-1>', '')
                 canvas.bind('<ButtonRelease-1>', '')
                 canvas.itemconfig(screen1, text='Вы уничтожили цель за ' + str(bullet) + ' выстрелов')
+
         canvas.update()
         time.sleep(0.03)
-        g1.targeting()
-        g1.power_up()
+        gun.targeting()  # ???
+        gun.shot_power()
+
     canvas.itemconfig(screen1, text='')
-    canvas.delete(Gun)
+    canvas.delete(Gun)  # ???
     root.after(750, new_game)
 
 

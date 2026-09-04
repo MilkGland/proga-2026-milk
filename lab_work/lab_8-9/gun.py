@@ -100,7 +100,7 @@ class Gun:
         self.f2_on = 0
         self.f2_power = 10
 
-    def targeting(self, event=0):
+    def take_aim(self, event=0):
         """
         Прицеливание, зависящее от положения мыши.
         :param event:
@@ -138,12 +138,10 @@ class Target:
         self.y = randrange(300, 550)
         self.r = randrange(2, 50)
         self.color = 'red'
-    # FIXME: don't work!!! How to call this functions when object is created?
         self.id = canvas.create_oval(0,0,0,0)
         self.id_points = canvas.create_text(30,30,text = self.points,font = '28')
-        #self.create_new_target()
 
-    def create_new_target(self):
+    def place_target(self):
         canvas.coords(self.id, self.x - self.r, self.y - self.r,
                              self.x + self.r, self.y + self.r)
         canvas.itemconfig(self.id, fill=self.color)
@@ -168,10 +166,10 @@ balls = []
 def new_game(event=''):
     global gun, target, screen1, balls, bullet
 
-    target.create_new_target()  # ???
+    target.place_target()
     canvas.bind('<Button-1>', gun.shoot_start)
     canvas.bind('<ButtonRelease-1>', gun.shoot_end)
-    canvas.bind('<Motion>', gun.targeting)
+    canvas.bind('<Motion>', gun.take_aim)
 
     while target.is_alive or balls:
         for b in balls:
@@ -186,7 +184,7 @@ def new_game(event=''):
 
         canvas.update()
         time.sleep(0.03)
-        gun.targeting()  # ???
+        gun.take_aim()
         gun.shot_power()
 
     canvas.itemconfig(screen1, text='')
